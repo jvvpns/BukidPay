@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/brand/bukidpay-logo.svg" alt="BukidPay" width="240" />
+</p>
+
 # BukidPay
 
 **Pay once. Settle the whole hike.**
@@ -10,7 +14,7 @@ This implementation is adapted from the official [Paiflow hackathon starter](htt
 
 - Actual event registration context: **₱1,600**
 - Hackathon payment demo: **10 XLM on Stellar Testnet**
-- Sample allocation: guides 7.5%, local fees 15%, meals/logistics 30%, event operations 47.5%
+- Sample allocation: **Guide Allocation** (7.5%), **Local Fees Allocation** (15%), **Food + Logistics** (30%), **Event Operations** (47.5%)
 - Guide assumption: 20 planned participants, 1 guide per 10 participants, approximately ₱1,200 per guide
 - Paiflow flow: **On Receive native XLM → percentage Split**
 - Testnet funds have no real-money value; 10 XLM is not presented as equivalent to ₱1,600.

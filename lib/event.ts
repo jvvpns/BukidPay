@@ -17,6 +17,7 @@ export const ALLOCATIONS = [
     percent: 7.5,
     amountXlm: "0.75",
     amountStroops: "7500000",
+    rationale: "2 certified local guides for 20 hikers (₱120 / participant)",
   },
   {
     key: "localFees",
@@ -26,6 +27,7 @@ export const ALLOCATIONS = [
     percent: 15,
     amountXlm: "1.50",
     amountStroops: "15000000",
+    rationale: "LGU tourism pass & barangay environmental permits",
   },
   {
     key: "logistics",
@@ -35,6 +37,7 @@ export const ALLOCATIONS = [
     percent: 30,
     amountXlm: "3.00",
     amountStroops: "30000000",
+    rationale: "Island-hop boat transfers, trail meals & summit pack rations",
   },
   {
     key: "operations",
@@ -44,6 +47,7 @@ export const ALLOCATIONS = [
     percent: 47.5,
     amountXlm: "4.75",
     amountStroops: "47500000",
+    rationale: "Sweep safety marshals, first aid, satellite comms & organizer margin",
   },
 ] as const;
 

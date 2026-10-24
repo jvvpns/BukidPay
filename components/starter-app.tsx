@@ -101,13 +101,23 @@ function AllocationRows({ verified = false }: { verified?: boolean }) {
   return (
     <div className="allocation-list">
       {ALLOCATIONS.map((allocation, index) => (
-        <div className="allocation-row" key={allocation.key}>
+        <div className="allocation-row" key={allocation.key} tabIndex={0}>
           <div className={`allocation-icon allocation-icon-${index + 1}`}>
             <Icon path={ALLOCATION_ICONS[index]?.path ?? mdiHiking} size={0.72} aria-hidden />
           </div>
           <div className="allocation-copy">
-            <strong>{allocation.label}</strong>
-            <span>{allocation.percent}% of demo payment</span>
+            <div className="allocation-title-wrap">
+              <strong>{allocation.label}</strong>
+              <span className="allocation-why-pill" aria-hidden="true">Why?</span>
+            </div>
+            <div className="allocation-subline-frame">
+              <span className="allocation-default-sub">
+                {allocation.percent}% of demo payment
+              </span>
+              <span className="allocation-hover-sub">
+                {allocation.rationale}
+              </span>
+            </div>
           </div>
           <strong className="allocation-amount">{allocation.amountXlm} XLM</strong>
           {verified && <Check small />}

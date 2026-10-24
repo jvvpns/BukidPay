@@ -3,9 +3,10 @@
 .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 html { scroll-behavior:smooth; }
 body { margin:0; background:var(--cream); }
+body::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.04; background:var(--forest); -webkit-mask:url("/assets/topography.png") center/520px auto repeat; mask:url("/assets/topography.png") center/520px auto repeat; }
 button,a { font:inherit; }
 button { color:inherit; }
-.app-shell { min-height:100vh; overflow:hidden; }
+.app-shell { min-height:100vh; overflow:hidden; position:relative; z-index:1; }
 .site-header,footer { max-width:1240px; margin:0 auto; padding:24px 42px; display:flex; align-items:center; justify-content:space-between; }
 .site-header { border-bottom:1px solid rgba(24,35,29,.15); }
 .wordmark { appearance:none; border:0; background:transparent; padding:0; display:inline-flex; align-items:center; gap:10px; font:800 1rem/1 "Avenir Next",system-ui,sans-serif; letter-spacing:.08em; cursor:pointer; }
@@ -202,5 +203,7 @@ footer { border-top:1px solid rgba(24,35,29,.14); color:var(--muted); font-size:
   .pulsing-dot,.progress-step.active.pulsing>span { animation:none!important; }
   .allocation-default-sub,.allocation-hover-sub,.allocation-why-pill { transition:none!important; transform:none!important; }
 }
-@media print { .site-header,footer,.receipt-actions { display:none; }.receipt-page { padding:20px; }.receipt-card { box-shadow:none; } }
+@media print { body::before { display:none; }.site-header,footer,.receipt-actions { display:none; }.receipt-page { padding:20px; }.receipt-card { box-shadow:none; } }
+
+
 

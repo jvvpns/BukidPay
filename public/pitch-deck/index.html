@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#F5F3EA">
+  <title>BukidPay — Hackathon Pitch</title>
+  <link rel="preload" as="image" href="../assets/manaphag-hero.jpg">
+  <link rel="preload" as="image" href="../assets/800964557_2052820515375765_6899761668360632906_n.jpg">
+  <link rel="preload" as="image" href="../brand/bukidpay-mark.svg">
+  <link rel="stylesheet" href="runtime/base.css">
+  <link rel="stylesheet" href="runtime/animations/animations.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="tpl-bukidpay" data-logo="../brand/bukidpay-logo.svg" data-logo-position="top-left" data-logo-size="52px"
+  data-logo-opacity="1" data-logo-alt="BukidPay">
+  <div class="deck" aria-label="BukidPay three-slide hackathon pitch">
+
+    <section class="slide slide-one" data-title="The problem">
+      <div class="topography" aria-hidden="true"></div>
+      <div class="slide-index" aria-hidden="true">01 / 03</div>
+      <header class="slide-heading slide-one-heading">
+        <p class="kicker">THE PROBLEM</p>
+        <h1>One registration payment can cover several event costs</h1>
+      </header>
+
+      <div class="problem-layout">
+        <figure class="event-photo img-frame">
+          <img src="../assets/manaphag-hero.jpg" alt="Mt. Manaphag rising over the sea near Concepcion, Iloilo">
+          <div class="photo-grade" aria-hidden="true"></div>
+          <figcaption class="event-anchor">
+            <span>ACTUAL EVENT REGISTRATION</span>
+            <strong>₱1,600</strong>
+            <b>Mt. Manaphag Hike + Island Hop</b>
+            <small>Guides · local fees · transport · meals · operations</small>
+          </figcaption>
+        </figure>
+
+        <div class="manual-panel">
+          <div class="manual-title">
+            <span>CURRENT WORKFLOW</span>
+            <strong>Payment first. Allocation afterward.</strong>
+          </div>
+
+          <div class="manual-flow" aria-label="Current manual event payment workflow">
+            <div class="manual-step" style="--i:0">
+              <span class="step-dot">01</span>
+              <div><strong>Participant pays</strong><small>GCash / bank / cash</small></div>
+            </div>
+            <div class="flow-line" aria-hidden="true"></div>
+            <div class="manual-step" style="--i:1">
+              <span class="step-dot">02</span>
+              <div><strong>Organizer tracks</strong><small>Forms / chats / confirmations</small></div>
+            </div>
+            <div class="flow-line" aria-hidden="true"></div>
+            <div class="manual-step manual-step-friction" style="--i:2">
+              <span class="step-dot">03</span>
+              <div><strong>Organizer allocates manually</strong><small>Several event needs, handled afterward</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="validation-card">
+            <figure class="validation-photo">
+              <img src="../assets/800964557_2052820515375765_6899761668360632906_n.jpg"
+                alt="JV with friends from the hiking community, including the event organizer">
+            </figure>
+            <div>
+              <span>REAL ORGANIZER VALIDATION</span>
+              <strong>Validated with 1 hiking organizer</strong>
+              <small>Using an actual paid-event workflow</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="notes">
+        <p><strong>REAL EVENT. ₱1,600.</strong></p>
+        <p>One registration covered several costs: guides, local fees, transport, meals, and event operations.</p>
+        <p>Validated with <strong>one organizer</strong>. Payment is collected first; allocation happens later.</p>
+        <p><em>Transition:</em> “What if allocation happened when payment happened?”</p>
+      </aside>
+    </section>
+
+    <section class="slide slide-two" data-title="The BukidPay allocation">
+      <div class="topography topography-soft" aria-hidden="true"></div>
+      <div class="slide-index" aria-hidden="true">02 / 03</div>
+      <header class="slide-heading solution-heading">
+        <div>
+          <p class="kicker">THE SOLUTION</p>
+          <h1>One registration. Multiple event needs.<br>Allocated automatically.</h1>
+        </div>
+        <div class="assumption-badge">
+          <span>SAMPLE ALLOCATION</span>
+          <strong>Planned participants: 20</strong>
+        </div>
+      </header>
+
+      <div class="allocation-stage" aria-label="BukidPay payment allocation flow">
+        <svg class="flow-map" viewBox="0 0 1600 560" role="img"
+          aria-label="One participant payment flows through BukidPay and branches into four event allocations">
+          <path class="flow-path flow-path-base" d="M180 108 C 340 108, 440 108, 590 108" pathLength="1" />
+          <path class="flow-path flow-path-active incoming-active" d="M180 108 C 340 108, 440 108, 590 108"
+            pathLength="1" />
+          <path class="flow-path flow-path-base" d="M800 208 C 800 250, 800 260, 800 300" pathLength="1" />
+          <path class="flow-path flow-path-active split-stem" d="M800 208 C 800 250, 800 260, 800 300" pathLength="1" />
+          <path class="flow-path flow-path-base" d="M800 300 C 800 344, 240 344, 200 438" pathLength="1" />
+          <path class="flow-path flow-path-base" d="M800 300 C 800 344, 590 344, 600 438" pathLength="1" />
+          <path class="flow-path flow-path-base" d="M800 300 C 800 344, 1010 344, 1000 438" pathLength="1" />
+          <path class="flow-path flow-path-base" d="M800 300 C 800 344, 1360 344, 1400 438" pathLength="1" />
+          <path class="flow-path flow-path-active branch branch-one" d="M800 300 C 800 344, 240 344, 200 438"
+            pathLength="1" />
+          <path class="flow-path flow-path-active branch branch-two" d="M800 300 C 800 344, 590 344, 600 438"
+            pathLength="1" />
+          <path class="flow-path flow-path-active branch branch-three" d="M800 300 C 800 344, 1010 344, 1000 438"
+            pathLength="1" />
+          <path class="flow-path flow-path-active branch branch-four" d="M800 300 C 800 344, 1360 344, 1400 438"
+            pathLength="1" />
+          <circle class="payment-pulse" cx="180" cy="108" r="12" />
+        </svg>
+
+        <div class="participant-node">
+          <span>PARTICIPANT</span>
+          <strong>One payment</strong>
+          <small>10 XLM · Testnet demo</small>
+        </div>
+
+        <div class="bukidpay-node">
+          <div class="core-ring" aria-hidden="true"></div>
+          <img src="../brand/bukidpay-mark.svg" alt="BukidPay BP mountain and pathway mark">
+          <div><strong>BUKIDPAY</strong><span>via PAIFLOW</span></div>
+        </div>
+
+        <div class="split-node"><span>SPLIT</span></div>
+
+        <div class="allocation-cards">
+          <article class="allocation-card guide-card" style="--i:0">
+            <span class="allocation-name">GUIDE ALLOCATION</span>
+            <strong>7.5%</strong>
+            <b>0.75 XLM</b>
+            <small>2 guides × ₱1,200 ÷ 20<br>= ₱120 / participant</small>
+          </article>
+          <article class="allocation-card" style="--i:1">
+            <span class="allocation-name">LOCAL FEES</span>
+            <strong>15%</strong>
+            <b>1.50 XLM</b>
+            <small>Configured event allocation</small>
+          </article>
+          <article class="allocation-card" style="--i:2">
+            <span class="allocation-name">FOOD &amp; LOGISTICS</span>
+            <strong>30%</strong>
+            <b>3.00 XLM</b>
+            <small>Configured event allocation</small>
+          </article>
+          <article class="allocation-card" style="--i:3">
+            <span class="allocation-name">OPERATIONS + ORGANIZER MARGIN</span>
+            <strong>47.5%</strong>
+            <b>4.75 XLM</b>
+            <small>Event delivery costs + organizer earnings</small>
+          </article>
+        </div>
+
+        <div class="verified-result" aria-live="polite">
+          <span>10.00 XLM ALLOCATED</span>
+          <strong>ALLOCATION VERIFIED ✓</strong>
+        </div>
+      </div>
+
+      <footer class="solution-footer">
+        <div><span>ACTUAL EVENT REGISTRATION</span><strong>₱1,600</strong></div>
+        <p>Registration confirms after the allocation is verified.</p>
+        <div><span>HACKATHON PAYMENT DEMO</span><strong>10 XLM · TESTNET</strong><small>No real-money value</small>
+        </div>
+      </footer>
+
+      <aside class="notes">
+        <p><strong>ONE REGISTRATION.</strong> One predefined event allocation.</p>
+        <p>The guide sample uses a 20-person plan: two guides at about ₱1,200 each, or ₱120 per
+          participant—<strong>7.5%</strong> of ₱1,600.</p>
+        <p>The <strong>47.5% operations bucket</strong> covers event delivery costs and organizer earnings. The
+          organizer’s actual profit is what remains after those costs.</p>
+        <p>Paiflow executes the configured Split. BukidPay confirms only after the allocation is verified.</p>
+        <p><em>Do not say:</em> final real-world recipients are fully paid.</p>
+      </aside>
+    </section>
+
+    <section class="slide slide-three" data-title="Stellar plus Paiflow">
+      <div class="topography topography-right" aria-hidden="true"></div>
+      <div class="slide-index" aria-hidden="true">03 / 03</div>
+      <header class="slide-heading infrastructure-heading">
+        <p class="kicker">STELLAR + PAIFLOW</p>
+        <h1>Paiflow executes the allocation.<br>Stellar makes the result verifiable.</h1>
+        <p class="impact-line">Participant-authorized payments with verifiable event allocations on Stellar.</p>
+      </header>
+
+      <div class="infrastructure-layout">
+        <div class="architecture" aria-label="Four-step payment architecture">
+          <div class="architecture-step" style="--i:0">
+            <span>1</span>
+            <div><strong>FREIGHTER</strong><small>Participant authorizes</small></div>
+          </div>
+          <div class="architecture-line" style="--i:1" aria-hidden="true"></div>
+          <div class="architecture-step" style="--i:2">
+            <span>2</span>
+            <div><strong>PAIFLOW</strong><small>Receive XLM → Split</small></div>
+          </div>
+          <div class="architecture-line" style="--i:3" aria-hidden="true"></div>
+          <div class="architecture-step" style="--i:4">
+            <span>3</span>
+            <div><strong>STELLAR</strong><small>Testnet transaction</small></div>
+          </div>
+          <div class="architecture-line" style="--i:5" aria-hidden="true"></div>
+          <div class="architecture-step architecture-final" style="--i:6">
+            <span>✓</span>
+            <div><strong>BUKIDPAY</strong><small>Verified receipt</small></div>
+          </div>
+        </div>
+
+        <div class="demo-proof">
+          <p class="proof-label">LIVE DEMO CHECKPOINTS</p>
+          <ul class="checkpoint-list">
+            <li style="--i:0"><span>✓</span>Real Freighter authorization</li>
+            <li style="--i:1"><span>✓</span>Real Paiflow Receive → Split</li>
+            <li style="--i:2"><span>✓</span>Real Stellar Testnet transaction</li>
+            <li style="--i:3"><span>✓</span>Verified allocation outputs</li>
+          </ul>
+
+          <div class="hero-result">
+            <span>VERIFIED RESULT</span>
+            <strong>10.00 XLM received</strong>
+            <b>= 10.00 XLM allocated ✓</b>
+          </div>
+
+          <a class="demo-button" href="http://localhost:3001/" data-demo-link>
+            <span>START LIVE DEMO</span><kbd>D</kbd>
+          </a>
+        </div>
+      </div>
+
+      <aside class="notes">
+        <p><strong>FREIGHTER:</strong> the participant authorizes.</p>
+        <p><strong>PAIFLOW:</strong> receives XLM and executes the configured Split.</p>
+        <p><strong>STELLAR:</strong> gives us a verifiable Testnet result.</p>
+        <p><strong>BUKIDPAY:</strong> shows the receipt only after verification.</p>
+        <p><em>Transition:</em> Press D and run the live demo.</p>
+      </aside>
+    </section>
+
+  </div>
+
+  <div class="controls-hint" aria-hidden="true">
+    <span>← →</span> navigate <span>S</span> presenter <span>F</span> fullscreen <span>O</span> overview <span>D</span>
+    demo
+  </div>
+
+  <script src="runtime/runtime.js"></script>
+  <script src="deck.js"></script>
+</body>
+
+</html>

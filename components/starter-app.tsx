@@ -70,15 +70,33 @@ function Check({ small = false }: { small?: boolean }) {
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
+  const shellRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = shellRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      el.classList.toggle("scrolled", window.scrollY > 16);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <div className="app-shell">
-      <header className="site-header">
-        <button className="wordmark" onClick={() => window.scrollTo({ top: 0 })}>
+    <div className="app-shell" ref={shellRef}>
+      <header className="site-header" role="banner">
+        <button
+          className="wordmark"
+          aria-label="BukidPay — back to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
           <BukidPayMark />
-          <span>BUKIDPAY</span>
+          <span className="wordmark-text">BukidPay</span>
         </button>
-        <div className="network-pill" data-testid="network-chip">
-          <span /> Stellar Testnet
+        <div className="network-pill" data-testid="network-chip" aria-label="Network: Stellar Testnet">
+          <span aria-hidden="true" />
+          <span className="pill-full">Stellar Testnet</span>
+          <span className="pill-short" aria-hidden="true">Testnet</span>
         </div>
       </header>
       {children}

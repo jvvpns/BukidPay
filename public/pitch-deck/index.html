@@ -16,11 +16,11 @@
 
 <body class="tpl-bukidpay" data-logo="../brand/bukidpay-logo.svg" data-logo-position="top-left" data-logo-size="52px"
   data-logo-opacity="1" data-logo-alt="BukidPay">
-  <div class="deck" aria-label="BukidPay three-slide hackathon pitch">
+  <div class="deck" data-main-total="4" aria-label="BukidPay four-slide hackathon pitch with four Q and A backup slides">
 
     <section class="slide slide-one" data-title="The problem">
       <div class="topography" aria-hidden="true"></div>
-      <div class="slide-index" aria-hidden="true">01 / 03</div>
+      <div class="slide-index" aria-hidden="true">01 / 04</div>
       <header class="slide-heading slide-one-heading">
         <p class="kicker">THE PROBLEM</p>
         <h1>One registration payment can cover several event costs</h1>
@@ -77,16 +77,17 @@
       </div>
 
       <aside class="notes">
-        <p><strong>REAL EVENT. ₱1,600.</strong></p>
-        <p>One registration covered several costs: guides, local fees, transport, meals, and event operations.</p>
-        <p>Validated with <strong>one organizer</strong>. Payment is collected first; allocation happens later.</p>
-        <p><em>Transition:</em> “What if allocation happened when payment happened?”</p>
+        <p><strong>HOOK:</strong> “This ₱1,600 hiking registration looks like one payment.”</p>
+        <p>But behind it are guides, local fees, meals, logistics, transportation, and event operations.</p>
+        <p>Participants pay through GCash, bank, or cash. The organizer tracks confirmations through forms and group chats, receives the registration money first, and then manually allocates it across the event’s needs.</p>
+        <p>Validated with <strong>one organizer</strong>.</p>
+        <p><em>Transition:</em> “What if that allocation happened when the participant paid, instead of afterward?”</p>
       </aside>
     </section>
 
     <section class="slide slide-two" data-title="The BukidPay allocation">
       <div class="topography topography-soft" aria-hidden="true"></div>
-      <div class="slide-index" aria-hidden="true">02 / 03</div>
+      <div class="slide-index" aria-hidden="true">02 / 04</div>
       <header class="slide-heading solution-heading">
         <div>
           <p class="kicker">THE SOLUTION</p>
@@ -176,9 +177,8 @@
       </footer>
 
       <aside class="notes">
-        <p><strong>ONE REGISTRATION.</strong> One predefined event allocation.</p>
-        <p>The guide sample uses a 20-person plan: two guides at about ₱1,200 each, or ₱120 per
-          participant—<strong>7.5%</strong> of ₱1,600.</p>
+        <p><strong>“THAT’S BUKIDPAY.”</strong> The organizer defines the event allocation in advance. When the participant pays, Paiflow automatically divides the registration into the predefined event allocations.</p>
+        <p>The guide sample uses a 20-person plan: two guides at about ₱1,200 each, or ₱120 per participant—<strong>7.5%</strong> of ₱1,600.</p>
         <p>The <strong>47.5% operations bucket</strong> covers event delivery costs and organizer earnings. The
           organizer’s actual profit is what remains after those costs.</p>
         <p>Paiflow executes the configured Split. BukidPay confirms only after the allocation is verified.</p>
@@ -188,7 +188,7 @@
 
     <section class="slide slide-three" data-title="Stellar plus Paiflow">
       <div class="topography topography-right" aria-hidden="true"></div>
-      <div class="slide-index" aria-hidden="true">03 / 03</div>
+      <div class="slide-index" aria-hidden="true">03 / 04</div>
       <header class="slide-heading infrastructure-heading">
         <p class="kicker">STELLAR + PAIFLOW</p>
         <h1>Paiflow executes the allocation.<br>Stellar makes the result verifiable.</h1>
@@ -233,26 +233,187 @@
             <b>= 10.00 XLM allocated ✓</b>
           </div>
 
-          <a class="demo-button" href="http://localhost:3001/" data-demo-link>
+          <a class="demo-button" href="/" data-demo-link>
             <span>START LIVE DEMO</span><kbd>D</kbd>
           </a>
         </div>
       </div>
 
       <aside class="notes">
-        <p><strong>FREIGHTER:</strong> the participant authorizes.</p>
-        <p><strong>PAIFLOW:</strong> receives XLM and executes the configured Split.</p>
-        <p><strong>STELLAR:</strong> gives us a verifiable Testnet result.</p>
-        <p><strong>BUKIDPAY:</strong> shows the receipt only after verification.</p>
+        <p><strong>IMPACT ON STELLAR:</strong> the allocation becomes independently verifiable instead of remaining only as an organizer’s spreadsheet plan.</p>
+        <p><strong>INTEGRATION:</strong> Freighter lets the participant authorize the payment. Paiflow executes Receive XLM → Split, and BukidPay verifies the actual outputs before confirming the registration.</p>
         <p><em>Transition:</em> Press D and run the live demo.</p>
+      </aside>
+    </section>
+
+    <section class="slide slide-close" data-title="Close" data-no-logo>
+      <img src="../brand/bukidpay-logo.svg" alt="BukidPay"
+        style="position:absolute;top:28px;left:112px;z-index:11;height:52px;width:auto;max-width:74px;object-fit:contain;">
+      <div class="close-card">
+        <p class="close-positioning">BukidPay confirms each registration only after the configured event
+          allocation is verified on Stellar.</p>
+        <p class="close-line">One registration.<br>Every configured allocation verified.</p>
+      </div>
+      <aside class="notes">
+        <p><strong>CLOSE:</strong> read the positioning line, pause, then the final line. Stop there. Q&amp;A
+          follows only if the judges ask.</p>
+      </aside>
+    </section>
+
+    <section class="slide slide-backup qa-verification" data-title="Registration verification" data-backup>
+      <div class="topography topography-soft" aria-hidden="true"></div>
+      <div class="qa-index" aria-hidden="true">Q&amp;A 01 / 04</div>
+      <header class="slide-heading qa-heading">
+        <p class="kicker">EXPECTED Q&amp;A</p>
+        <h1>Registration confirmation requires exact evidence</h1>
+        <p>BukidPay checks the original transaction and the Paiflow events from that same payment.</p>
+      </header>
+
+      <div class="qa-evidence-flow" aria-label="Four checks required before registration confirmation">
+        <article class="qa-evidence-step">
+          <span>01</span>
+          <strong>FINALITY</strong>
+          <p>The original transaction reaches <b>SUCCESS</b> on Stellar Testnet.</p>
+        </article>
+        <article class="qa-evidence-step">
+          <span>02</span>
+          <strong>RECEIVE EVENT</strong>
+          <p>One event matches the payer, native XLM, and <b>100000000 stroops</b>.</p>
+        </article>
+        <article class="qa-evidence-step">
+          <span>03</span>
+          <strong>EXACT SPLIT</strong>
+          <p>One payout matches all four configured recipients at <b>750 / 1,500 / 3,000 / 4,750 bps</b>.</p>
+        </article>
+        <article class="qa-evidence-step qa-evidence-result">
+          <span>✓</span>
+          <strong>CONFIRM</strong>
+          <p><b>10 XLM received</b> and <b>10 XLM allocated</b>. Only then does registration confirm.</p>
+        </article>
+      </div>
+
+      <aside class="notes">
+        <p><strong>SHORT ANSWER:</strong> BukidPay does not trust a success screen by itself. It checks final transaction success, the matching Receive event, and the exact configured four-recipient Split. Registration confirms only when the original 10 XLM is fully accounted for.</p>
+      </aside>
+    </section>
+
+    <section class="slide slide-backup qa-recovery" data-title="Payment recovery" data-backup>
+      <div class="topography topography-right" aria-hidden="true"></div>
+      <div class="qa-index" aria-hidden="true">Q&amp;A 02 / 04</div>
+      <header class="slide-heading qa-heading">
+        <p class="kicker">EXPECTED Q&amp;A</p>
+        <h1>Uncertain status never creates a second payment</h1>
+        <p>BukidPay retains the original evidence and keeps every recovery action tied to it.</p>
+      </header>
+
+      <div class="qa-recovery-map" aria-label="Recovery path for an uncertain payment">
+        <div class="qa-statuses">
+          <span>PENDING</span>
+          <span>UNKNOWN</span>
+          <span>NOT_FOUND</span>
+          <span>EXPIRED PREPARATION</span>
+        </div>
+        <div class="qa-recovery-line" aria-hidden="true"></div>
+        <div class="qa-recovery-core">
+          <span>RETAIN</span>
+          <strong>Original transaction hash<br>Exact signed envelope</strong>
+          <small>Preparation scope and correlation metadata stay attached</small>
+        </div>
+        <div class="qa-recovery-line" aria-hidden="true"></div>
+        <div class="qa-recovery-actions">
+          <div><span>01</span><strong>Check the original transaction</strong></div>
+          <div><span>02</span><strong>Retry only the exact signed envelope when appropriate</strong></div>
+        </div>
+      </div>
+
+      <div class="qa-guardrail">NO REPLACEMENT PREPARATION FROM AN UNCERTAIN RESULT</div>
+
+      <aside class="notes">
+        <p><strong>SHORT ANSWER:</strong> BukidPay saves the preparation before signing and the exact signed envelope before submission. A pending, unknown, missing, or expired result never authorizes a replacement. We check the original hash and retry only that same envelope when appropriate.</p>
+      </aside>
+    </section>
+
+    <section class="slide slide-backup qa-scope" data-title="Prototype and production scope" data-backup>
+      <div class="topography topography-soft" aria-hidden="true"></div>
+      <div class="qa-index" aria-hidden="true">Q&amp;A 03 / 04</div>
+      <header class="slide-heading qa-heading">
+        <p class="kicker">EXPECTED Q&amp;A</p>
+        <h1>Prototype scope and production requirements</h1>
+      </header>
+
+      <div class="qa-scope-layout">
+        <section>
+          <span class="qa-section-label">WORKING PROTOTYPE</span>
+          <h2>What exists today</h2>
+          <ul>
+            <li>Stellar Testnet payment authorized through Freighter</li>
+            <li>One configured native XLM Paiflow Receive and Split deployment</li>
+            <li>Exact transaction and allocation verification before confirmation</li>
+            <li>Browser recovery that preserves the original payment evidence</li>
+          </ul>
+        </section>
+        <div class="qa-scope-divider" aria-hidden="true"></div>
+        <section>
+          <span class="qa-section-label">BEFORE PRODUCTION</span>
+          <h2>What the real service still needs</h2>
+          <ul>
+            <li>User authentication and registration ownership checks</li>
+            <li>Durable order and recovery storage across devices</li>
+            <li>Shared rate limits and operational monitoring</li>
+            <li>Trusted pricing, production payment rails, and legal review</li>
+          </ul>
+        </section>
+      </div>
+
+      <footer class="qa-scope-footnote">
+        <strong>₱1,600</strong> is the actual event registration.
+        <strong>10 XLM</strong> is the Testnet demo and has no real monetary value.
+      </footer>
+
+      <aside class="notes">
+        <p><strong>SHORT ANSWER:</strong> This is a Testnet prototype of the payment lifecycle, not a production checkout or fiat conversion service. The payment and verification flow works, while a real service still needs authentication, durable storage, shared controls, trusted pricing, and legal review.</p>
+      </aside>
+    </section>
+
+    <section class="slide slide-backup qa-validation" data-title="Validation and next evidence" data-backup>
+      <div class="topography topography-right" aria-hidden="true"></div>
+      <div class="qa-index" aria-hidden="true">Q&amp;A 04 / 04</div>
+      <header class="slide-heading qa-heading">
+        <p class="kicker">EXPECTED Q&amp;A</p>
+        <h1>Evidence today and the next validation</h1>
+      </header>
+
+      <div class="qa-validation-layout">
+        <section class="qa-validation-now">
+          <span class="qa-section-label">EVIDENCE TODAY</span>
+          <strong>1</strong>
+          <h2>hiking organizer</h2>
+          <p>Validation used an actual paid event workflow with a <b>₱1,600 registration</b>.</p>
+          <p>The sample allocation assumes <b>20 planned participants</b>.</p>
+        </section>
+        <section class="qa-validation-next">
+          <span class="qa-section-label">NEXT EVIDENCE</span>
+          <ol>
+            <li><span>01</span><p>Run a complete authorized Testnet rehearsal on the configured deployment.</p></li>
+            <li><span>02</span><p>Validate the workflow with additional organizers of outdoor events.</p></li>
+            <li><span>03</span><p>Measure allocation and reconciliation work before and after BukidPay.</p></li>
+            <li><span>04</span><p>Test budget rules when actual headcount differs from the plan.</p></li>
+          </ol>
+        </section>
+      </div>
+
+      <div class="qa-validation-caveat">COMMERCIAL PRICING REMAINS UNVALIDATED</div>
+
+      <aside class="notes">
+        <p><strong>SHORT ANSWER:</strong> We validated the problem with one real hiking organizer, so we present that evidence without overstating it. The next step is an authorized rehearsal and broader organizer validation, including what happens when actual headcount differs from the plan. Pricing remains an open question.</p>
       </aside>
     </section>
 
   </div>
 
   <div class="controls-hint" aria-hidden="true">
-    <span>← →</span> navigate <span>S</span> presenter <span>F</span> fullscreen <span>O</span> overview <span>D</span>
-    demo
+    <span>← →</span> navigate <span>S</span> presenter <span>F</span> fullscreen <span>O</span> overview
+    <span>B</span> Q&amp;A <span>D</span> demo
   </div>
 
   <script src="runtime/runtime.js"></script>

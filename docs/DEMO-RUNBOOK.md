@@ -27,9 +27,20 @@ The application refuses to enable payment actions unless all server settings and
 
 ## Go / no-go rehearsal
 
-Run the complete flow twice consecutively:
+Before presenting:
 
-1. Event page shows ₱1,600 separately from 10 XLM.
+1. Run one BukidPay server only.
+2. Open the HTML deck from that server and confirm both **Start Live Demo** and the `D` shortcut open the same app.
+3. Select **Reset demo capacity** on the event page. This returns the display to 18 / 20 without clearing payment recovery evidence.
+4. Confirm the event page shows **18 / 20 confirmed** and **2 slots remaining**.
+5. Confirm Freighter is connected to Stellar Testnet and the configured payment path is ready.
+6. Confirm a receipt shows the exact 7.5 / 15 / 30 / 47.5 allocation and its Stellar link opens the same transaction.
+7. Generate a Hike Pass from a verified receipt and confirm `/verify-pass` accepts the original package and rejects modified data.
+8. Open presenter mode and reset its timer.
+
+Run the core payment flow twice consecutively:
+
+1. Event page shows ₱1,600 separately from 10 XLM and starts at 18 / 20 confirmed.
 2. Freighter is connected to Stellar Testnet.
 3. The customer approves the prepared 10 XLM envelope.
 4. Submission retains the original transaction hash and signed envelope.
@@ -37,6 +48,12 @@ Run the complete flow twice consecutively:
 6. Paiflow indexed events show one 10 XLM deposit from the payer and the exact four-recipient Split.
 7. BukidPay renders **REGISTRATION CONFIRMED** and **ALLOCATION VERIFIED**.
 8. The Stellar Expert link opens the same transaction hash.
+9. Prototype capacity changes to 19 / 20 exactly once and does not increment again after reload.
+10. The verified receipt remains usable if optional Hike Pass generation fails.
+
+If rehearsals reach 20 / 20, the page shows **Event full** as informational
+prototype state while **Register & pay** remains available for the core Testnet
+demo. Reset explicitly before presenting; the counter never loops automatically.
 
 If a response is lost or status remains pending, do not prepare another payment. Let the bounded original-hash checks finish, then use **Check original transaction**. A manual resubmission uses only the exact saved envelope.
 
@@ -49,5 +66,7 @@ If a response is lost or status remains pending, do not prepare another payment.
 - Keep the Stellar Explorer transaction open in a tab.
 - Have a spare funded customer wallet and phone hotspot.
 
-Fallback order: correct wallet/network → hotspot → confirmed transaction → backup recording.
+Pitch priority: core verified receipt → Stellar transaction verification → Hike Pass only if time clearly remains.
+
+Fallback order: correct wallet/network → hotspot → confirmed transaction → backup recording. Never restart a successful core payment because the optional Hike Pass failed.
 

@@ -197,6 +197,27 @@
 
     let idx = 0;
     const total = slides.length;
+    const requestedMainTotal = parseInt(deck.getAttribute('data-main-total'), 10);
+    const mainTotal = Number.isInteger(requestedMainTotal) && requestedMainTotal > 0 && requestedMainTotal <= total
+      ? requestedMainTotal
+      : total;
+    const backupTotal = total - mainTotal;
+    const mainLastIdx = mainTotal - 1;
+    const backupStartIdx = mainTotal;
+
+    function isBackupIndex(n) { return backupTotal > 0 && n >= backupStartIdx; }
+    function nextIndex(n) {
+      if (isBackupIndex(n)) return Math.min(total - 1, n + 1);
+      return Math.min(mainLastIdx, n + 1);
+    }
+    function prevIndex(n) {
+      if (isBackupIndex(n)) return n > backupStartIdx ? n - 1 : mainLastIdx;
+      return Math.max(0, n - 1);
+    }
+    function toggleBackup() {
+      if (!backupTotal) return;
+      go(isBackupIndex(idx) ? mainLastIdx : backupStartIdx);
+    }
 
     /* ===== BroadcastChannel for presenter sync ===== */
     const CHANNEL_NAME = 'html-ppt-presenter-' + location.pathname;
@@ -230,8 +251,14 @@
       overview = document.createElement('div');
       overview.className = 'overview';
       slides.forEach((s, i) => {
+        if (i === 0 || i === backupStartIdx) {
+          const heading = document.createElement('div');
+          heading.className = 'overview-section';
+          heading.textContent = i === 0 ? 'MAIN PITCH' : 'Q&A BACKUP';
+          overview.appendChild(heading);
+        }
         const t = document.createElement('div');
-        t.className = 'thumb';
+        t.className = 'thumb' + (isBackupIndex(i) ? ' backup-thumb' : '');
         // Force 16:9 aspect ratio robustly
         t.style.padding = '0 0 56.25% 0';
         t.style.height = '0';
@@ -276,7 +303,7 @@
         
         const n = document.createElement('div');
         n.className = 'n';
-        n.textContent = i + 1;
+        n.textContent = isBackupIndex(i) ? 'Q' + (i - backupStartIdx + 1) : i + 1;
         n.style.position = 'absolute';
         n.style.top = '12px';
         n.style.left = '16px';
@@ -315,17 +342,24 @@
         s.classList.toggle('is-prev', i<n);
       });
       idx = n;
+      const inBackup = isBackupIndex(n);
+      const sectionNumber = inBackup ? n - backupStartIdx + 1 : n + 1;
+      const sectionTotal = inBackup ? backupTotal : mainTotal;
+      document.body.classList.toggle('in-backup', inBackup);
       syncLogo(slides[n]);
-      barFill.style.width = ((n+1)/total*100)+'%';
+      barFill.style.width = (sectionNumber/sectionTotal*100)+'%';
       const numEl = document.querySelector('.slide-number');
-      if (numEl) { numEl.setAttribute('data-current', n+1); numEl.setAttribute('data-total', total); }
+      if (numEl) {
+        numEl.setAttribute('data-current', sectionNumber);
+        numEl.setAttribute('data-total', sectionTotal);
+      }
 
       // notes (bottom overlay)
       const note = slides[n].querySelector(NOTE_SEL);
       notes.innerHTML = note ? note.innerHTML : '';
 
       // hash
-      const hashTarget = '#/'+(n+1);
+      const hashTarget = inBackup ? '#/qna/'+sectionNumber : '#/'+sectionNumber;
       if (location.hash !== hashTarget && !isPresenterWindow) {
         history.replaceState(null,'', hashTarget);
       }
@@ -417,13 +451,14 @@
         return {
           title: s.getAttribute('data-title') ||
             (s.querySelector('h1,h2,h3')||{}).textContent || ('Slide '+(i+1)),
-          notes: note ? note.innerHTML : ''
+          notes: note ? note.innerHTML : '',
+          backup: s.hasAttribute('data-backup')
         };
       });
 
       /* Capture current theme so presenter previews match the audience */
       const currentTheme = root.getAttribute('data-theme') || (themes[themeIdx] || '');
-      const presenterHTML = buildPresenterHTML(deckUrl, slideMeta, total, idx, CHANNEL_NAME, currentTheme);
+      const presenterHTML = buildPresenterHTML(deckUrl, slideMeta, total, mainTotal, idx, CHANNEL_NAME, currentTheme);
 
       presenterWin = window.open('', 'html-ppt-presenter', 'width=1280,height=820,menubar=no,toolbar=no');
       if (!presenterWin) {
@@ -435,7 +470,7 @@
       presenterWin.document.close();
     }
 
-    function buildPresenterHTML(deckUrl, slideMeta, total, startIdx, channelName, currentTheme) {
+    function buildPresenterHTML(deckUrl, slideMeta, total, mainTotal, startIdx, channelName, currentTheme) {
       /* Notes are authored HTML. Escaping "<" keeps a literal </script> in a
          slide's notes from closing the inline script that carries this JSON —
          which would kill the whole presenter init. */
@@ -665,7 +700,7 @@
       <div class="timer-display" id="timer-display">00:00</div>
       <div class="timer-row">
         <span class="label">Slide</span>
-        <span class="val" id="timer-count">1 / ${total}</span>
+        <span class="val" id="timer-count">1 / ${mainTotal}</span>
       </div>
       <div class="timer-controls">
         <button class="timer-btn" id="btn-prev">← Prev</button>
@@ -679,6 +714,7 @@
 
 <div class="hint-bar">
   <span><kbd>← →</kbd> 翻页</span>
+  <span><kbd>B</kbd> Q&amp;A</span>
   <span><kbd>R</kbd> 重置计时</span>
   <span><kbd>Esc</kbd> 关闭</span>
   <span style="color:#6e7681">拖动卡片头部移动 · 拖动右下角调整大小</span>
@@ -689,6 +725,10 @@
 (function(){
   var slideMeta = ${metaJSON};
   var total = ${total};
+  var mainTotal = ${mainTotal};
+  var backupTotal = total - mainTotal;
+  var mainLastIdx = mainTotal - 1;
+  var backupStartIdx = mainTotal;
   var idx = ${startIdx};
   var deckUrl = ${deckUrlJSON};
   var STORAGE_KEY = ${embed(storageKey)};
@@ -703,15 +743,34 @@
   var timerDisplay = document.getElementById('timer-display');
   var timerCount = document.getElementById('timer-count');
 
+  function isBackupIndex(n) { return backupTotal > 0 && n >= backupStartIdx; }
+  function formatIndex(n) {
+    return isBackupIndex(n)
+      ? 'Q&A ' + (n - backupStartIdx + 1) + '/' + backupTotal
+      : (n + 1) + '/' + mainTotal;
+  }
+  function nextIndex(n) {
+    if (isBackupIndex(n)) return Math.min(total - 1, n + 1);
+    return Math.min(mainLastIdx, n + 1);
+  }
+  function prevIndex(n) {
+    if (isBackupIndex(n)) return n > backupStartIdx ? n - 1 : mainLastIdx;
+    return Math.max(0, n - 1);
+  }
+  function toggleBackup() {
+    if (!backupTotal) return;
+    go(isBackupIndex(idx) ? mainLastIdx : backupStartIdx);
+  }
+
+  /* ===== Default card layout ===== */
+  var CARD_IDS = ['card-cur','card-nxt','card-notes','card-timer'];
+  var MIN_W = 180, MIN_H = 100;
+
   /* Lay the cards out before anything else. This used to be the LAST statement
      of the init, so every line below it was a single point of failure for the
      whole presenter's visibility (#14). Function declarations hoist, so this is
      safe here. */
   applyLayout(readLayout());
-
-  /* ===== Default card layout ===== */
-  var CARD_IDS = ['card-cur','card-nxt','card-notes','card-timer'];
-  var MIN_W = 180, MIN_H = 100;
 
   function defaultLayout() {
     /* A popup that opened minimised or in a background tab can report 0 here;
@@ -880,7 +939,7 @@
     } else if (e.source === iframeNxt.contentWindow) {
       iframeReady.nxt = true;
       iframe = iframeNxt;
-      postPreviewGoto(iframeNxt, idx + 1 < total ? idx + 1 : idx);
+      postPreviewGoto(iframeNxt, nextIndex(idx));
     }
     /* Sync current theme to the iframe */
     if (iframe && currentTheme) {
@@ -905,23 +964,27 @@
 
     /* Current preview — postMessage (smooth) */
     if (iframeReady.cur) postPreviewGoto(iframeCur, n);
-    curMeta.textContent = (n + 1) + '/' + total;
+    curMeta.textContent = formatIndex(n);
 
     /* Next preview */
-    if (n + 1 < total) {
+    var next = nextIndex(n);
+    if (next !== n) {
       iframeNxt.style.display = '';
       var endEl = document.querySelector('#card-nxt .preview-end');
       if (endEl) endEl.remove();
-      if (iframeReady.nxt) postPreviewGoto(iframeNxt, n + 1);
-      nxtMeta.textContent = (n + 2) + '/' + total;
+      if (iframeReady.nxt) postPreviewGoto(iframeNxt, next);
+      nxtMeta.textContent = formatIndex(next);
     } else {
       iframeNxt.style.display = 'none';
       var body = document.querySelector('#card-nxt .pcard-body');
-      if (body && !body.querySelector('.preview-end')) {
-        var end = document.createElement('div');
-        end.className = 'preview-end';
-        end.textContent = '— END OF DECK —';
-        body.appendChild(end);
+      if (body) {
+        var end = body.querySelector('.preview-end');
+        if (!end) {
+          end = document.createElement('div');
+          end.className = 'preview-end';
+          body.appendChild(end);
+        }
+        end.textContent = isBackupIndex(n) ? '— END OF Q&A —' : '— END OF PITCH —';
       }
       nxtMeta.textContent = 'END';
     }
@@ -931,7 +994,7 @@
     notesBody.innerHTML = note || '<span class="empty">（这一页还没有逐字稿）</span>';
 
     /* Timer count */
-    timerCount.textContent = (n + 1) + ' / ' + total;
+    timerCount.textContent = formatIndex(n);
   }
 
   /* ===== Timer ===== */
@@ -966,8 +1029,8 @@
   }
 
   /* ===== Buttons ===== */
-  document.getElementById('btn-prev').addEventListener('click', function(){ go(idx - 1); });
-  document.getElementById('btn-next').addEventListener('click', function(){ go(idx + 1); });
+  document.getElementById('btn-prev').addEventListener('click', function(){ go(prevIndex(idx)); });
+  document.getElementById('btn-next').addEventListener('click', function(){ go(nextIndex(idx)); });
   document.getElementById('btn-reset').addEventListener('click', resetTimer);
   document.getElementById('reset-layout').addEventListener('click', function(){
     if (confirm('恢复默认卡片布局？')) {
@@ -980,10 +1043,11 @@
   document.addEventListener('keydown', function(e){
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     switch(e.key) {
-      case 'ArrowRight': case ' ': case 'PageDown': go(idx + 1); e.preventDefault(); break;
-      case 'ArrowLeft':  case 'PageUp':   go(idx - 1); e.preventDefault(); break;
+      case 'ArrowRight': case ' ': case 'PageDown': go(nextIndex(idx)); e.preventDefault(); break;
+      case 'ArrowLeft':  case 'PageUp':   go(prevIndex(idx)); e.preventDefault(); break;
       case 'Home': go(0); break;
-      case 'End':  go(total - 1); break;
+      case 'End':  go(isBackupIndex(idx) ? total - 1 : mainLastIdx); break;
+      case 'b': case 'B': toggleBackup(); break;
       case 'r': case 'R': resetTimer(); break;
       case 'Escape': window.close(); break;
     }
@@ -1000,13 +1064,10 @@
    */
   try {
     iframeCur.src = deckUrl + '?preview=' + (idx + 1);
-    if (idx + 1 < total) iframeNxt.src = deckUrl + '?preview=' + (idx + 2);
-    /* Initialize notes/timer/count without touching iframes */
-    var m = slideMeta[idx] || {};
-    notesBody.innerHTML = m.notes || '<span class="empty">（这一页还没有逐字稿）</span>';
-    curMeta.textContent = (idx + 1) + '/' + total;
-    nxtMeta.textContent = (idx + 2) + '/' + total;
-    timerCount.textContent = (idx + 1) + ' / ' + total;
+    var initialNext = nextIndex(idx);
+    if (initialNext !== idx) iframeNxt.src = deckUrl + '?preview=' + (initialNext + 1);
+    /* Initialize metadata and the explicit END state on the final slide. */
+    update(idx);
   } catch (e) {
     /* Report it, but never let it blank the cards. */
     if (window.console && console.error) console.error('[html-ppt] presenter init:', e);
@@ -1080,17 +1141,21 @@
     document.addEventListener('keydown', function (e) {
       if (e.metaKey||e.ctrlKey||e.altKey) return;
       switch (e.key) {
-        case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': go(idx+1); e.preventDefault(); break;
-        case 'ArrowLeft': case 'PageUp': case 'Backspace': go(idx-1); e.preventDefault(); break;
+        case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': go(nextIndex(idx)); e.preventDefault(); break;
+        case 'ArrowLeft': case 'PageUp': case 'Backspace': go(prevIndex(idx)); e.preventDefault(); break;
         case 'Home': go(0); break;
-        case 'End': go(total-1); break;
+        case 'End': go(isBackupIndex(idx) ? total-1 : mainLastIdx); break;
         case 'f': case 'F': fullscreen(); break;
         case 's': case 'S': openPresenterWindow(); break;
         case 'n': case 'N': toggleNotes(); break;
         case 'o': case 'O': toggleOverview(); break;
+        case 'b': case 'B': toggleBackup(); break;
         case 't': case 'T': cycleTheme(); break;
         case 'a': case 'A': cycleAnim(); break;
-        case 'Escape': toggleOverview(false); toggleNotes(false); break;
+        case 'Escape':
+          if (isBackupIndex(idx)) go(mainLastIdx);
+          else { toggleOverview(false); toggleNotes(false); }
+          break;
       }
     });
 
@@ -1144,7 +1209,7 @@
         var dx = t.clientX - x0, dy = t.clientY - y0;
         if (Math.abs(dx) < SWIPE_MIN_PX) return;
         if (Math.abs(dx) < Math.abs(dy) * SWIPE_RATIO) return;
-        go(dx < 0 ? idx + 1 : idx - 1);
+        go(dx < 0 ? nextIndex(idx) : prevIndex(idx));
       }, { passive: true });
 
       document.addEventListener('touchcancel', function(){ tracking = false; }, { passive: true });
@@ -1152,8 +1217,13 @@
 
     // hash deep-link
     function fromHash(){
-      const m = /^#\/(\d+)/.exec(location.hash||'');
-      if (m) go(Math.max(0, parseInt(m[1],10)-1));
+      const qna = /^#\/qna\/(\d+)/.exec(location.hash||'');
+      if (qna && backupTotal) {
+        go(Math.min(total - 1, backupStartIdx + Math.max(0, parseInt(qna[1],10)-1)));
+        return;
+      }
+      const main = /^#\/(\d+)/.exec(location.hash||'');
+      if (main) go(Math.min(mainLastIdx, Math.max(0, parseInt(main[1],10)-1)));
     }
     window.addEventListener('hashchange', fromHash);
     fromHash();

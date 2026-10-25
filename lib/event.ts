@@ -1,10 +1,14 @@
 export const EVENT = {
+  id: "mt-manaphag-2026-demo",
   name: "Mt. Manaphag Hike + Island Hop",
   eyebrow: "Sample event · Concepcion, Iloilo",
   registrationPhp: "₱1,600",
   demoXlm: "10.00",
   amountStroops: "100000000",
   plannedParticipants: 20,
+  capacity: 20,
+  initialConfirmedParticipants: 18,
+  passValidUntil: "2026-10-31T23:59:59+08:00" as string | null,
   allocationNote: "Sample allocation based on planned participants",
 } as const;
 

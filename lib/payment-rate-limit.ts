@@ -2,7 +2,13 @@ import "server-only";
 import { RequestError } from "@/lib/http";
 
 type Bucket = { count: number; resetAt: number };
-const limits = { request: 240, prepare: 20, submit: 20, status: 120 } as const;
+const limits = {
+  request: 240,
+  prepare: 20,
+  submit: 20,
+  status: 120,
+  pass: 20,
+} as const;
 const buckets = new Map<keyof typeof limits, Bucket>();
 const windowMs = 60_000;
 

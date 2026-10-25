@@ -10,12 +10,12 @@ async function scan(directory) {
     else if (entry.name.endsWith(".js")) {
       const text = await readFile(path, "utf8");
       if (
-        /p(?:fd|fk)_[a-f0-9]{64}|PAIFLOW_API_TOKEN|PaiflowTransport|class PaiflowApiError/.test(
+        /p(?:fd|fk)_[a-f0-9]{64}|PAIFLOW_API_TOKEN|BUKIDPAY_PASS_SIGNING_PRIVATE_KEY|PaiflowTransport|class PaiflowApiError/.test(
           text,
         )
       ) {
         throw new Error(
-          "Server credential or SDK runtime found in browser bundle.",
+          "Server credential, signing key marker or SDK runtime found in browser bundle.",
         );
       }
     }

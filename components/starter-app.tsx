@@ -9,6 +9,11 @@ import {
   mdiClipboardCheckOutline,
 } from "@mdi/js";
 import { ALLOCATIONS, EVENT } from "@/lib/event";
+import {
+  countVerifiedRegistration,
+  readDemoCapacity,
+  resetDemoCapacity,
+} from "@/lib/demo-capacity";
 import type { NetworkFinality, PublicConfig, Prepared, Result } from "@/lib/types";
 import {
   BrowserRequestError,
@@ -31,6 +36,7 @@ import {
   findConflictingRecovery,
 } from "@/lib/recovery";
 import type { ConflictingRecovery, Recovery } from "@/lib/recovery";
+import { HikePass } from "@/components/hike-pass";
 
 type Screen = "event" | "review" | "receipt";
 type Operation = {
@@ -390,20 +396,20 @@ function lerp(a: number, b: number, t: number) {
 //   image edge margin at MAX displacement = (dim × (SCALE_BLEED-1)/2) - MAX
 //   e.g. for X: (460 × 0.05) - 14 = 23 - 14 = 9px always inside → safe ✓
 
-const MAX_X       = 14;    // px — max horizontal shift
-const MAX_Y       = 10;    // px — max vertical shift
-const LERP_IN     = 0.07;  // spring factor while hovering (~120ms settle)
-const LERP_OUT    = 0.05;  // spring factor while restoring (~180ms settle)
+const MAX_X = 14;    // px — max horizontal shift
+const MAX_Y = 10;    // px — max vertical shift
+const LERP_IN = 0.07;  // spring factor while hovering (~120ms settle)
+const LERP_OUT = 0.05;  // spring factor while restoring (~180ms settle)
 const SCALE_BLEED = 1.10;  // image oversize to absorb displacement
 
 function MountainCard() {
   const containerRef = useRef<HTMLDivElement>(null); // stationary card-art (joystick zone)
-  const imgRef       = useRef<HTMLImageElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  const target   = useRef({ x: 0, y: 0 });
+  const target = useRef({ x: 0, y: 0 });
   const rendered = useRef({ x: 0, y: 0 });
   const hovering = useRef(false);
-  const rafId    = useRef<number | null>(null);
+  const rafId = useRef<number | null>(null);
 
   // React state drives the card-body fade (only 2 state changes per hover cycle)
   const [isHovered, setIsHovered] = useState(false);
@@ -441,8 +447,8 @@ function MountainCard() {
     if (isTouch) return;
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const nx = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
-    const ny = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+    const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
     target.current.x = Math.max(-1, Math.min(1, nx)) * MAX_X;
     target.current.y = Math.max(-1, Math.min(1, ny)) * MAX_Y;
     startTick();
@@ -510,12 +516,40 @@ export function StarterApp({ config }: { config: PublicConfig }) {
   const [blocked, setBlocked] = useState(true);
   const [conflict, setConflict] = useState<ConflictingRecovery | null>(null);
   const [screen, setScreen] = useState<Screen>("event");
+  const [confirmedParticipants, setConfirmedParticipants] = useState<number>(
+    EVENT.initialConfirmedParticipants,
+  );
+  const [capacityMessage, setCapacityMessage] = useState("");
   const key = config.ready ? `paiflow-sdk-payment-v2:${config.scope}` : "";
   const scopeKey = useRef(key);
   scopeKey.current = key;
   const loadedKey = useRef<string | null>(null);
   const active = useRef<AbortController | null>(null);
   const resumed = useRef(new Set<string>());
+
+  useEffect(() => {
+    try {
+      setConfirmedParticipants(readDemoCapacity(localStorage, EVENT));
+    } catch {
+      setConfirmedParticipants(EVENT.initialConfirmedParticipants);
+      setCapacityMessage("Prototype availability could not be restored.");
+    }
+  }, []);
+
+  useEffect(() => {
+    const txHash = record?.receipt?.txHash;
+    if (!txHash) return;
+    try {
+      setConfirmedParticipants(
+        countVerifiedRegistration(localStorage, EVENT, txHash),
+      );
+      setCapacityMessage("");
+    } catch {
+      setCapacityMessage(
+        "Registration is verified; prototype availability could not be updated.",
+      );
+    }
+  }, [record?.receipt?.txHash]);
 
   useEffect(() => {
     loadedKey.current = null;
@@ -916,6 +950,16 @@ export function StarterApp({ config }: { config: PublicConfig }) {
     op.message("Final transaction acknowledged. A new demo payment is now possible.");
   }
 
+  function resetCapacity() {
+    try {
+      resetDemoCapacity(localStorage, EVENT);
+      setConfirmedParticipants(EVENT.initialConfirmedParticipants);
+      setCapacityMessage("Demo capacity reset to 18 / 20.");
+    } catch {
+      setCapacityMessage("Prototype capacity could not be reset.");
+    }
+  }
+
   const paymentStage = record?.receipt
     ? 4
     : confirming || record?.attempted
@@ -925,6 +969,8 @@ export function StarterApp({ config }: { config: PublicConfig }) {
         : record
           ? 1
           : 0;
+  const eventFull = confirmedParticipants >= EVENT.capacity;
+  const slotsRemaining = Math.max(0, EVENT.capacity - confirmedParticipants);
 
   return (
     <Shell>
@@ -942,6 +988,34 @@ export function StarterApp({ config }: { config: PublicConfig }) {
                 <div><span>Actual event registration</span><strong>{EVENT.registrationPhp}</strong></div>
                 <div><span>Hackathon payment demo</span><strong>{EVENT.demoXlm} XLM</strong></div>
               </div>
+              <div className="capacity-card" aria-label="Sample event capacity">
+                <div className="capacity-copy">
+                  <span>Event capacity</span>
+                  <strong>{confirmedParticipants} / {EVENT.capacity} confirmed</strong>
+                  <small>
+                    {eventFull
+                      ? "Event full"
+                      : `${slotsRemaining} ${slotsRemaining === 1 ? "slot" : "slots"} remaining`}
+                  </small>
+                </div>
+                <div
+                  className="capacity-progress"
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={EVENT.capacity}
+                  aria-valuenow={confirmedParticipants}
+                >
+                  <span
+                    style={{
+                      width: `${Math.min(100, (confirmedParticipants / EVENT.capacity) * 100)}%`,
+                    }}
+                  />
+                </div>
+                <div className="capacity-meta">
+                  <p>{capacityMessage || "Prototype availability"}</p>
+                  <button type="button" onClick={resetCapacity}>Reset demo capacity</button>
+                </div>
+              </div>
               <p className="testnet-note">Testnet funds have no real-money value.</p>
               <button
                 className="primary-button"
@@ -950,6 +1024,11 @@ export function StarterApp({ config }: { config: PublicConfig }) {
               >
                 Register &amp; pay <span>→</span>
               </button>
+              {eventFull && (
+                <p className="demo-mode-note">
+                  Demo mode: prototype capacity does not block testnet payments.
+                </p>
+              )}
               {!config.ready && <p className="config-note">{config.message}</p>}
               {config.ready && blocked && message && (
                 <p className="config-note" role="alert">{message}</p>
@@ -1080,15 +1159,14 @@ export function StarterApp({ config }: { config: PublicConfig }) {
 
                 return (
                   <div
-                    className={`progress-step ${
-                      paymentStage > index
+                    className={`progress-step ${paymentStage > index
                         ? "complete"
                         : paymentStage === index
                           ? isPulsing
                             ? "active pulsing"
                             : "active"
                           : ""
-                    }`}
+                      }`}
                     key={label}
                   >
                     <span>{paymentStage > index ? "✓" : index + 1}</span>
@@ -1147,6 +1225,8 @@ export function StarterApp({ config }: { config: PublicConfig }) {
               <a href={`https://stellar.expert/explorer/testnet/tx/${record.receipt.txHash}`} target="_blank" rel="noreferrer">Verify on Stellar ↗</a>
             </div>
           </section>
+
+          <HikePass txHash={record.receipt.txHash} />
 
           <div className="receipt-actions">
             <button className="secondary-button" onClick={() => window.print()}>Print receipt</button>

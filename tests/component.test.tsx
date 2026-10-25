@@ -3,6 +3,8 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { StarterApp } from "@/components/starter-app";
 import { fixtureAddress, fixturePrepared } from "./transaction-fixture";
 import { envelopeHash } from "@/lib/transaction";
+import { demoCapacityKey } from "@/lib/demo-capacity";
+import { EVENT } from "@/lib/event";
 import { connectWallet, signPrepared } from "@/lib/wallet";
 vi.mock("@/lib/wallet", () => ({
   connectWallet: vi.fn(),
@@ -94,14 +96,14 @@ afterEach(async () => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
 });
-async function mount() {
+async function mount(startPayment = true) {
   await act(() => {
     renderer = create(
       <StarterApp config={{ ready: true, scope, deploymentUrl: scope }} />,
     );
   });
   const start = button("Register & pay →");
-  if (start && !start.props.disabled)
+  if (startPayment && start && !start.props.disabled)
     await act(() => start.props.onClick());
 }
 function textContent(node: ReactTestRenderer["root"]): string {
@@ -707,4 +709,44 @@ it("displays verified allocation outputs and allows navigating between review vi
   expect(reviewText).toContain("Event Allocation");
   expect(reviewText).toContain("ALLOCATION VERIFIED");
   expect(button("View confirmed receipt →")).toBeDefined();
+  const capacity = JSON.parse(values.get(demoCapacityKey(EVENT.id))!);
+  expect(capacity.countedTxHashes).toEqual([stored.prepared.txHash]);
+});
+
+it("does not consume prototype capacity for pending payment evidence", async () => {
+  values.set(
+    key,
+    JSON.stringify({ ...stored, attempted: true, status: "PENDING" }),
+  );
+  vi.mocked(fetch).mockResolvedValue(status("PENDING"));
+  await mount();
+  expect(values.has(demoCapacityKey(EVENT.id))).toBe(false);
+});
+
+it("keeps testnet payment available at prototype capacity and resets capacity explicitly", async () => {
+  const capacityKey = demoCapacityKey(EVENT.id);
+  values.set(
+    capacityKey,
+    JSON.stringify({
+      version: 1,
+      eventId: EVENT.id,
+      countedTxHashes: ["a".repeat(64), "b".repeat(64)],
+    }),
+  );
+
+  await mount(false);
+
+  const fullText = textContent(renderer!.root);
+  expect(fullText).toContain("20 / 20 confirmed");
+  expect(fullText).toContain("Event full");
+  expect(fullText).toContain(
+    "Demo mode: prototype capacity does not block testnet payments.",
+  );
+  expect(button("Register & pay →").props.disabled).toBe(false);
+
+  await click("Reset demo capacity");
+
+  expect(values.has(capacityKey)).toBe(false);
+  expect(textContent(renderer!.root)).toContain("18 / 20 confirmed");
+  expect(textContent(renderer!.root)).toContain("Demo capacity reset to 18 / 20.");
 });

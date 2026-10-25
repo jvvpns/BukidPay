@@ -49,6 +49,21 @@ PAIFLOW_RECIPIENT_OPERATIONS=<public G-address>
 
 The addresses must exactly match the configured 7.5 / 15 / 30 / 47.5 Split. Never use `NEXT_PUBLIC_` for Paiflow credentials and never store customer secret keys.
 
+The event page also shows a frontend-only sample capacity indicator, starting
+at 18 / 20 confirmed. It is prototype availability, not payment authorization,
+a reservation, or a concurrency system. At 20 / 20 the page shows **Event
+full**, but demo-mode Testnet payment remains available. Use **Reset demo
+capacity** before a rehearsal to return the display to 18 / 20 and clear only
+the counted demo transaction hashes. Payment recovery evidence is kept.
+
+An optional signed QR Hike Pass can be enabled after an approved event validity
+time is set in `lib/event.ts`. Configure a dedicated Ed25519 key pair as
+base64-encoded DER (`PKCS#8` private and matching `SPKI` public) using
+`BUKIDPAY_PASS_SIGNING_PRIVATE_KEY`, `BUKIDPAY_PASS_VERIFY_PUBLIC_KEY` and
+`BUKIDPAY_PASS_KEY_ID`. These are server-only values and are separate from
+Freighter and Paiflow credentials. Without the approved event validity time or
+keys, only Hike Pass issuance is unavailable; payment and receipts are unchanged.
+
 ## Run
 
 ```sh
@@ -94,6 +109,6 @@ Tests use local fixtures and mocked upstream responses. They do not prove live p
 - `app/api/pay/route.ts` — allowlisted prepare, submit, and status actions
 - `docs/DEMO-RUNBOOK.md` — deployment and rehearsal checklist
 - `docs/PITCH.md` — three-minute pitch and live-demo script
-- `public/pitch-deck/index.html` — offline-capable three-slide HTML presentation
+- `public/pitch-deck/index.html` — offline-capable four-slide HTML presentation with Q&A backup slides
 
 This is a hackathon prototype, not a production checkout, fiat conversion service, LGU collection system, or accounting product.
